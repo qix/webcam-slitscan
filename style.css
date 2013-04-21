@@ -1,0 +1,12 @@
+
+#draw {
+  border: 2px solid #aaa;
+}
+
+#output {
+  border: 2px solid #aaa;
+}
+
+#video, #snapshot {
+  display: none;
+}
