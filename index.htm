@@ -1,16 +1,43 @@
-<h2 id="demo">Demo</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset=utf-8>
+<title>Slitscan via webcam demo</title>
 <link rel="stylesheet" type="text/css" href="//raw.github.com/qix/slitscan/master/style.css">
+</head>
+<body>
+<h2>Slitscan Demo</h2>
 
 <table><tr>
 <td><canvas id="draw"></canvas></td>
 <td><canvas id="output"></canvas></td>
 </tr></table>
 
+Choose: 
+<select id="defaults">
+</select><br/>
+
+Frames
+<select id="frames">
+  <option value="16">16</option>
+  <option value="32">32</option>
+  <option value="64" selected="selected">64</option>
+  <option value="128">128</option>
+  <option value="256">256</option>
+</select>
+
+<div style="display:none;">
 <video id="video" autoplay="autoplay"></video>
 <canvas id="snapshot"></canvas>
+</div>
+
+<pre><strong>Status</strong>
+<div id="status">Trying to connect to webcam...</div>
+</pre>
 
 <script type="text/javascript" src="//raw.github.com/qix/slitscan/master/jquery.js"></script>
 <script type="text/javascript" src="//raw.github.com/qix/slitscan/master/underscore.js"></script>
 <script type="text/javascript" src="//raw.github.com/qix/slitscan/master/script.js"></script>
 
-<pre id="log"></pre>
+</body>
+</html>
