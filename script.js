@@ -17,21 +17,26 @@ var webcam = (function() {
 
     var URL = (window.URL || window.webkitURL);
 
-    getUserMedia.call(navigator, {video:true}, function (stream) {
-      video.src = URL.createObjectURL(stream);
+    var errback = function() {
+      alert('Failed to setup camera. Perhaps try a different browser with getUserMedia support.');
+    };
+
+    if (!getUserMedia) errback();
+    else{
+      getUserMedia.call(navigator, {video:true}, function (stream) {
+        video.src = URL.createObjectURL(stream);
 
 
-      var interval = setInterval(function() {
-        if (video.videoWidth > 0) {
-          clearInterval(interval);
+        var interval = setInterval(function() {
+          if (video.videoWidth > 0) {
+            clearInterval(interval);
 
-          onComplete(video.videoWidth, video.videoHeight);
-        }
-      }, 100);
+            onComplete(video.videoWidth, video.videoHeight);
+          }
+        }, 100);
 
-    }, function() {
-      alert('Failed to setup camera.');
-    });
+      }, errback);
+    }
 
   };
 
