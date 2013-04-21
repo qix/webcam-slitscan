@@ -49,6 +49,11 @@ var webcam = (function() {
   return this;
 }).call({});
 
+var draw = (function() {
+
+  return this;
+}).call({});
+
 $(function() {
 
   var drawCanvas = document.getElementById('draw'),
@@ -80,10 +85,16 @@ $(function() {
     width = videoWidth;
     height = videoHeight;
 
-    _.each([snapshotCanvas, outputCanvas, drawCanvas], function(canvas) {
+    _.each([snapshotCanvas, outputCanvas], function(canvas) {
       canvas.width = width;
       canvas.height = height;
     });
+
+    if (drawCanvas.width != width || drawCanvas.height != height) {
+      drawCanvas.width = width;
+      drawCanvas.height = height;
+      $('#defaults').change();
+    }
 
     // Create output image and fill alpha channel
     outputImage = outputContext.getImageData(0, 0, width, height);
@@ -93,7 +104,6 @@ $(function() {
     }
 
     // Setup the drawing canvas, and the frame interval
-    setupDrawCanvas($('#draw'));
     frameInterval = setInterval(frame, 30);
   });
 
@@ -146,10 +156,25 @@ $(function() {
       );
   }
 
-  // Set up all the drawer
-  function setupDrawCanvas($canvas) {
-    $('#defaults').change();
-  }
+  (function() {
+    var brush = new Image();
+    brush.src = 'brush.png';
+
+    var started = false;
+
+    var $draw = $('#draw');
+    $draw.mousedown(function() { started = true; });
+    $draw.mouseup(function() { started = false; });
+    $draw.mousemove(function(ev) {
+      if (started) {
+        var off = $draw.offset();
+        drawContext.drawImage(brush,
+          ev.pageX - off.left - brush.width/2,
+          ev.pageY - off.top - brush.height/2
+        );
+      }
+    });
+  })();
 
   (function() {
     var ctx = drawContext;
