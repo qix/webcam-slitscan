@@ -57,9 +57,11 @@ $(function() {
 
   var drawContext = drawCanvas.getContext("2d"),
       outputContext = outputCanvas.getContext("2d"),
-      snapshotContext = snapshotCanvas.getContext("2d");
+      snapshotContext = snapshotCanvas.getContext("2d"),
+      outputImage = null, outputData = null;
 
-  var frames = [];
+  var frames = [],
+      times = [];
 
   var frameInterval,
       frameNumber = 0;
@@ -73,6 +75,14 @@ $(function() {
       canvas.height = height;
     });
 
+    // Create output image and fill alpha channel
+    outputImage = outputContext.getImageData(0, 0, width, height);
+    outputData = outputImage.data;
+    for(var i = 0; i < outputData.length; i += 4) {
+      outputData[i+3] = 255;
+    }
+
+    // Setup the drawing canvas, and the frame interval
     setupDrawCanvas($('#draw'));
     frameInterval = setInterval(frame, 30);
   });
@@ -80,15 +90,17 @@ $(function() {
   function frame() {
     var data = webcam.fetch();
     var count = $('#frames').val();
+    var now = new Date().getTime() / 1000.0;
 
+    times.push(now);
     frames.push(data);
     while (frames.length > count) {
+      times.shift();
       frames.shift();
     }
 
     // quickly iterate over all pixels
     var drawData = drawContext.getImageData(0, 0, width, height).data;
-    var outputData = outputContext.getImageData(0, 0, width, height);
 
     var dataLength = drawData.length;
     var lineLength = dataLength / height;
@@ -97,27 +109,30 @@ $(function() {
 
     var drawScale = (frames.length-1) / 255.0;
 
+    // Render the entire image line by line
     for (var linePosition = 0; linePosition < dataLength; linePosition += lineLength) {
       for(var i = 0; i < lineLength; i += 4) {
 
+        // Flip the output for a mirror-like effect
         outputPos = linePosition+lineLength-i-4;
         inputPos  = linePosition+i;
         delay = parseInt(drawData[outputPos] * drawScale, 10);
 
-        outputData.data[outputPos]   = frames[delay][inputPos];
-        outputData.data[outputPos+1] = frames[delay][inputPos+1];
-        outputData.data[outputPos+2] = frames[delay][inputPos+2];
-        outputData.data[outputPos+3] = 255;
+        // Draw out all of the frames
+        outputData[outputPos]   = frames[delay][inputPos];
+        outputData[outputPos+1] = frames[delay][inputPos+1];
+        outputData[outputPos+2] = frames[delay][inputPos+2];
       }
     }
 
-    outputContext.putImageData(outputData, 0, 0);
+    outputContext.putImageData(outputImage, 0, 0);
 
+    // Update the status bar
     frameNumber += 1;
-
     $('#status').text(
         "Frame: "+frameNumber+"\n"+
-        "Frames loaded: "+frames.length+"\n"
+        "Frames loaded: "+frames.length+"\n"+
+        "Total delay: "+(now-times[0]).toFixed(1)
       );
   }
 
