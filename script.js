@@ -50,8 +50,10 @@ $(function() {
       video = document.getElementById('video'),
       outputCanvas = document.getElementById('output'),
       snapshotCanvas = document.getElementById('snapshot'),
-      videoStream = null,
-      width = null, height = null;
+      videoStream = null;
+
+  var width = drawCanvas.width,
+      height = drawCanvas.height;
 
   var drawContext = drawCanvas.getContext("2d"),
       outputContext = outputCanvas.getContext("2d"),
@@ -119,50 +121,95 @@ $(function() {
       );
   }
 
-  var addDefault = function(caption, cb) {
-    $('#defaults').append(
-      $('<option>').prop('value', caption)
-                   .text(caption)
-                   .data('callback', cb)
-    );
-  };
-
-  $('#defaults').change(function() {
-    $(this).find('option:selected').data('callback')();
-  });
-
   // Set up all the drawer
   function setupDrawCanvas($canvas) {
-    var ctx = $canvas[0].getContext("2d");
-    var size = 30;
-    var x, y;
-    var interval = null;
-    var hover = true;
+    $('#defaults').change();
+  }
 
-    addDefault('blank', function() {
-      ctx.fillStyle = '#fff';
-      ctx.fillRect(0, 0, width, height);
+  (function() {
+    var ctx = drawContext;
+
+    var addDefault = function(caption, cb) {
+      $('#defaults').append(
+        $('<option>').prop('value', caption)
+                    .text(caption)
+                    .data('callback', cb)
+      );
+    };
+
+    $('#defaults').change(function() {
+      $(this).find('option:selected').data('callback')();
     });
+
+    var background = function(color) {
+      ctx.fillStyle = color;
+      ctx.fillRect(0, 0, width, height);
+    };
 
     var linearGradient = function(x,y,x2,y2, start, stop) {
       var gradient = ctx.createLinearGradient(x,y,x2,y2);
       gradient.addColorStop(0, start);
       gradient.addColorStop(1, stop);
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, width, height);
+      background(gradient);
     };
 
+    var radialGradient = function(x,y,r,x2,y2,r2, start, stop) {
+      var gradient = ctx.createRadialGradient(x,y,r,x2,y2,r2);
+      gradient.addColorStop(0, start);
+      gradient.addColorStop(1, stop);
+      background(gradient);
+    };
+
+    var gradientWaves = function(x, y, x2, y2, stops) {
+      var gradient = ctx.createLinearGradient(x, y, x2, y2);
+      for (var k = 0; k <= stops; k++) {
+        gradient.addColorStop(k / stops, k%2 == 0 ? '#fff' : '#000');
+        console.log(k);
+      }
+      background(gradient);
+    };
+
+    addDefault('blank', function() {
+      background('#fff');
+    });
+
     addDefault('top-bottom', function() {
-      linearGradient(0, 0, 0, height, '#000', '#fff');
+      linearGradient(0, 0, 0, height, '#fff', '#000');
     });
 
     addDefault('bottom-top', function() {
-      linearGradient(0, 0, 0, height, '#fff', '#000');
+      linearGradient(0, 0, 0, height, '#000', '#fff');
     });
 
     addDefault('diagonal', function() {
       linearGradient(0, 0, width, height, '#fff', '#000');
     });
-  };
+
+    addDefault('tunnel', function() {
+      linearGradient(0, 0, width, height, '#fff', '#000');
+      radialGradient(0, 0, 0, width, height, Math.max(width,height)/2, '#fff', '#000');
+    });
+
+    addDefault('radial-in', function() {
+      background('#fff');
+      radialGradient(width/2, height/2, 0, width/2, height/2, Math.max(width,height), '#000', '#fff');
+    });
+
+    addDefault('radial-out', function() {
+      radialGradient(width/2, height/2, 0, width/2, height/2, Math.max(width,height), '#fff', '#000');
+    });
+
+    addDefault('horizontal-waves', function() {
+      gradientWaves(0, 0, width, 0, 5);
+    });
+
+    addDefault('vertical-waves', function() {
+      gradientWaves(0, 0, 0, height, 5);
+    });
+
+    addDefault('diagonal-waves', function() {
+      gradientWaves(0, 0, width, height, 5);
+    });
+  })();
 });
 
