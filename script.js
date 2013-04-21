@@ -71,6 +71,11 @@ $(function() {
   var frameInterval,
       frameNumber = 0;
 
+  // Write an initial message to the outputCanvas
+  outputContext.fillStyle = "red";
+  outputContext.font = "bold 16px Arial";
+  outputContext.fillText("Waiting for webcam feed...", 20, 28);
+
   webcam.init(function(videoWidth, videoHeight) {
     width = videoWidth;
     height = videoHeight;
@@ -157,10 +162,6 @@ $(function() {
       );
     };
 
-    $('#defaults').change(function() {
-      $(this).find('option:selected').data('callback')();
-    });
-
     var background = function(color) {
       ctx.fillStyle = color;
       ctx.fillRect(0, 0, width, height);
@@ -232,5 +233,10 @@ $(function() {
     });
 
   })();
+
+  $('#defaults').change(function() {
+    $(this).find('option:selected').data('callback')();
+  }).keyup(function() { $(this).change(); }).change();
+
 });
 
