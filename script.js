@@ -169,10 +169,6 @@ $(function() {
       background(gradient);
     };
 
-    addDefault('blank', function() {
-      background('#fff');
-    });
-
     addDefault('top-bottom', function() {
       linearGradient(0, 0, 0, height, '#fff', '#000');
     });
@@ -210,6 +206,11 @@ $(function() {
     addDefault('diagonal-waves', function() {
       gradientWaves(0, 0, width, height, 5);
     });
+
+    addDefault('blank', function() {
+      background('#fff');
+    });
+
   })();
 });
 
