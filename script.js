@@ -75,38 +75,61 @@ $(function() {
     frameInterval = setInterval(frame, 30);
   });
 
-  function stop() {
-    clearInterval(frameInterval);
-    frames = [];
-  }
-
   function frame() {
     var data = webcam.fetch();
+    var count = $('#frames').val();
 
     frames.push(data);
-    if (frames.length > 256) frames.shift();
+    while (frames.length > count) {
+      frames.shift();
+    }
 
     // quickly iterate over all pixels
     var drawData = drawContext.getImageData(0, 0, width, height).data;
     var outputData = outputContext.getImageData(0, 0, width, height);
 
-    for(var i = 0, n = drawData.length; i < n; i += 4) {
-      var delay = Math.min(drawData[i], frames.length-1);
-      outputData.data[i] = frames[delay][i+0];
-      outputData.data[i+1] = frames[delay][i+1];
-      outputData.data[i+2] = frames[delay][i+2];
-      outputData.data[i+3] = 255;
+    var dataLength = drawData.length;
+    var lineLength = dataLength / height;
+
+    var delay, outputPos, inputPos;
+
+    var drawScale = (frames.length-1) / 255.0;
+
+    for (var linePosition = 0; linePosition < dataLength; linePosition += lineLength) {
+      for(var i = 0; i < lineLength; i += 4) {
+
+        outputPos = linePosition+lineLength-i-4;
+        inputPos  = linePosition+i;
+        delay = parseInt(drawData[outputPos] * drawScale, 10);
+
+        outputData.data[outputPos]   = frames[delay][inputPos];
+        outputData.data[outputPos+1] = frames[delay][inputPos+1];
+        outputData.data[outputPos+2] = frames[delay][inputPos+2];
+        outputData.data[outputPos+3] = 255;
+      }
     }
 
     outputContext.putImageData(outputData, 0, 0);
 
     frameNumber += 1;
 
-    $('#log').text(
+    $('#status').text(
         "Frame: "+frameNumber+"\n"+
         "Frames loaded: "+frames.length+"\n"
       );
   }
+
+  var addDefault = function(caption, cb) {
+    $('#defaults').append(
+      $('<option>').prop('value', caption)
+                   .text(caption)
+                   .data('callback', cb)
+    );
+  };
+
+  $('#defaults').change(function() {
+    $(this).find('option:selected').data('callback')();
+  });
 
   // Set up all the drawer
   function setupDrawCanvas($canvas) {
@@ -116,15 +139,30 @@ $(function() {
     var interval = null;
     var hover = true;
 
-    // Create Linear Gradients
-    var lingrad = ctx.createLinearGradient(0,0,0,480);
-    lingrad.addColorStop(0, '#000');
-    lingrad.addColorStop(1, '#fff');
+    addDefault('blank', function() {
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, width, height);
+    });
 
-    ctx.fillStyle = lingrad;
-    ctx.fillRect(0, 0, 640, 480);
+    var linearGradient = function(x,y,x2,y2, start, stop) {
+      var gradient = ctx.createLinearGradient(x,y,x2,y2);
+      gradient.addColorStop(0, start);
+      gradient.addColorStop(1, stop);
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, width, height);
+    };
 
-    ctx.globalAlpha = 0.3;
+    addDefault('top-bottom', function() {
+      linearGradient(0, 0, 0, height, '#000', '#fff');
+    });
+
+    addDefault('bottom-top', function() {
+      linearGradient(0, 0, 0, height, '#fff', '#000');
+    });
+
+    addDefault('diagonal', function() {
+      linearGradient(0, 0, width, height, '#fff', '#000');
+    });
   };
 });
 
