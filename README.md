@@ -3,7 +3,7 @@ Slitscan webcam demo in HTML5
 
 A simple demo of a slitscan effect for time delaying video.
 
-Demo available at http://qix.github.io/slitscan/
+Demo available at http://qix.github.io/webcam-slitscan/
 
 Future plans
 ------------
