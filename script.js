@@ -160,20 +160,31 @@ $(function() {
     var brush = new Image();
     brush.src = 'brush.png';
 
-    var started = false;
+    var erase = new Image();
+    erase.src = 'erase.png';
+
+    var image = false;
 
     var $draw = $('#draw');
-    $draw.mousedown(function() { started = true; });
-    $draw.mouseup(function() { started = false; });
+    $draw.mousedown(function(ev) { 
+      if ((ev.which || 1) == 1) {
+        image = brush;
+      }else{
+        image = erase;
+      }
+    });
+    $draw.mouseup(function() { image = null; });
     $draw.mousemove(function(ev) {
-      if (started) {
+      if (image) {
         var off = $draw.offset();
-        drawContext.drawImage(brush,
-          ev.pageX - off.left - brush.width/2,
-          ev.pageY - off.top - brush.height/2
+        drawContext.drawImage(image,
+          ev.pageX - off.left - image.width/2,
+          ev.pageY - off.top - image.height/2
         );
       }
     });
+
+    $draw.bind('contextmenu', function() { return false; });
   })();
 
   (function() {
