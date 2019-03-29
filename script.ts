@@ -170,7 +170,7 @@ class App {
 
     // Update the status bar
     this.frameNumber += 1;
-    $("#status").text(
+    $("#status-content").text(
       "Frame: " +
         this.frameNumber +
         "\n" +

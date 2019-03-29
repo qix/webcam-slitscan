@@ -170,7 +170,7 @@ var App = /** @class */ (function () {
         this.outputContext.putImageData(this.outputImage, 0, 0);
         // Update the status bar
         this.frameNumber += 1;
-        $("#status").text("Frame: " +
+        $("#status-content").text("Frame: " +
             this.frameNumber +
             "\n" +
             "Frames loaded: " +
