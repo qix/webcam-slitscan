@@ -1,4 +1,3 @@
-"use strict";
 /***
  * Setup a webcam and fetch data from it
  **/
@@ -70,9 +69,6 @@ class App {
 
     this.videoStream = null;
 
-    this.width = this.drawCanvas.width;
-    this.height = this.drawCanvas.height;
-
     this.drawContext = this.drawCanvas.getContext("2d");
     this.outputContext = this.outputCanvas.getContext("2d");
     this.outputImage = null;
@@ -91,17 +87,17 @@ class App {
     this.webcam = new Webcam();
     const { videoWidth, videoHeight } = await this.webcam.init();
 
-    for (const canvas of [this.snapshotCanvas, this.outputCanvas]) {
-      canvas.width = videoWidth;
-      canvas.height = videoHeight;
-    }
-
-    if (
-      this.drawCanvas.width != videoWidth ||
-      this.drawCanvas.height != videoHeight
-    ) {
-      this.drawCanvas.width = videoWidth;
-      this.drawCanvas.height = videoHeight;
+    if (videoWidth === this.width || videoHeight != this.height) {
+      this.width = videoWidth;
+      this.height = videoHeight;
+      for (const canvas of [
+        this.drawCanvas,
+        this.snapshotCanvas,
+        this.outputCanvas
+      ]) {
+        canvas.width = videoWidth;
+        canvas.height = videoHeight;
+      }
       $("#defaults").change();
     }
 
@@ -117,7 +113,7 @@ class App {
       this.outputData[i + 3] = 255;
     }
 
-    this.frame();
+    setInterval(() => this.frame(), 10);
   }
 
   frame() {
@@ -180,7 +176,6 @@ class App {
         "Total delay: " +
         (now - this.times[0]).toFixed(1)
     );
-    setTimeout(() => this.frame(), 0);
   }
 }
 

@@ -1,4 +1,3 @@
-"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -89,6 +88,7 @@ var App = /** @class */ (function () {
     App.prototype.start = function () {
         return __awaiter(this, void 0, void 0, function () {
             var _a, videoWidth, videoHeight, _i, _b, canvas, i;
+            var _this = this;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -97,8 +97,6 @@ var App = /** @class */ (function () {
                         this.outputCanvas = document.getElementById("output");
                         this.snapshotCanvas = document.getElementById("snapshot");
                         this.videoStream = null;
-                        this.width = this.drawCanvas.width;
-                        this.height = this.drawCanvas.height;
                         this.drawContext = this.drawCanvas.getContext("2d");
                         this.outputContext = this.outputCanvas.getContext("2d");
                         this.outputImage = null;
@@ -114,15 +112,18 @@ var App = /** @class */ (function () {
                         return [4 /*yield*/, this.webcam.init()];
                     case 1:
                         _a = _c.sent(), videoWidth = _a.videoWidth, videoHeight = _a.videoHeight;
-                        for (_i = 0, _b = [this.snapshotCanvas, this.outputCanvas]; _i < _b.length; _i++) {
-                            canvas = _b[_i];
-                            canvas.width = videoWidth;
-                            canvas.height = videoHeight;
-                        }
-                        if (this.drawCanvas.width != videoWidth ||
-                            this.drawCanvas.height != videoHeight) {
-                            this.drawCanvas.width = videoWidth;
-                            this.drawCanvas.height = videoHeight;
+                        if (videoWidth === this.width || videoHeight != this.height) {
+                            this.width = videoWidth;
+                            this.height = videoHeight;
+                            for (_i = 0, _b = [
+                                this.drawCanvas,
+                                this.snapshotCanvas,
+                                this.outputCanvas
+                            ]; _i < _b.length; _i++) {
+                                canvas = _b[_i];
+                                canvas.width = videoWidth;
+                                canvas.height = videoHeight;
+                            }
                             $("#defaults").change();
                         }
                         // Create output image and fill alpha channel
@@ -131,14 +132,13 @@ var App = /** @class */ (function () {
                         for (i = 0; i < this.outputData.length; i += 4) {
                             this.outputData[i + 3] = 255;
                         }
-                        this.frame();
+                        setInterval(function () { return _this.frame(); }, 10);
                         return [2 /*return*/];
                 }
             });
         });
     };
     App.prototype.frame = function () {
-        var _this = this;
         var data = this.webcam.fetch();
         var count = $("#frames").val();
         var now = new Date().getTime() / 1000.0;
@@ -178,7 +178,6 @@ var App = /** @class */ (function () {
             "\n" +
             "Total delay: " +
             (now - this.times[0]).toFixed(1));
-        setTimeout(function () { return _this.frame(); }, 0);
     };
     return App;
 }());
