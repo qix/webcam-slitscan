@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "module": "system",
+    "lib": ["es2015", "dom"],
+    "outFile": "script.js"
+  },
+  "include": ["*.ts"]
+}
