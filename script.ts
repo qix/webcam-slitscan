@@ -117,8 +117,7 @@ class App {
       this.outputData[i + 3] = 255;
     }
 
-    // Setup the drawing canvas, and the frame interval
-    this.frameInterval = setInterval(() => this.frame(), 30);
+    this.frame();
   }
 
   frame() {
@@ -181,6 +180,7 @@ class App {
         "Total delay: " +
         (now - this.times[0]).toFixed(1)
     );
+    setTimeout(() => this.frame(), 0);
   }
 }
 
@@ -191,6 +191,11 @@ $(function() {
     .start()
     .then(() => {
       addOptions();
+
+      $("#fullscreen").click(() => {
+        $("#output")[0].requestFullscreen();
+      });
+
       $("#defaults")
         .change(function() {
           $(this)
