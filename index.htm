@@ -13,36 +13,44 @@
       >)
     </h2>
 
-    <table>
-      <tr>
-        <td><canvas id="draw" width="640" height="480"></canvas></td>
-        <td><canvas id="output" width="640" height="480"></canvas></td>
-      </tr>
-    </table>
+    <canvas id="output" width="640" height="480"></canvas>
+    <canvas id="draw" width="640" height="480"></canvas>
 
-    Choose:
-    <select id="defaults"> </select
-    ><br />
+    <div id="config">
+      <div class="config-option">
+        Choose:
+        <select id="defaults"> </select>
+      </div>
 
-    Frames
-    <select id="frames">
-      <option value="16">16</option>
-      <option value="32">32</option>
-      <option value="64" selected="selected">64</option>
-      <option value="128">128</option>
-      <option value="256">256</option> </select
-    ><br />
+      <div class="config-option">
+        Frames:
+        <select id="frames">
+          <option value="16">16</option>
+          <option value="32">32</option>
+          <option value="64" selected="selected">64</option>
+          <option value="128">128</option>
+          <option value="256">256</option>
+        </select>
+      </div>
 
-    Drag to draw, right click erases
+      <div class="config-option">
+        <button id="fullscreen">Fullscreen</button>
+      </div>
+
+      <div class="config-tip">
+        <span>Drag to draw, right click to erase</span>
+      </div>
+    </div>
 
     <div style="display:none;">
       <video id="video" autoplay="autoplay"></video>
       <canvas id="snapshot"></canvas>
     </div>
 
-    <pre><strong>Status</strong>
-<div id="status">Trying to connect to webcam...</div>
-</pre>
+    <div id="status">
+      <h2>Status</h2>
+      <div id="status-content">Trying to connect to webcam...</div>
+    </div>
 
     <script type="text/javascript" src="jquery.js"></script>
     <script type="text/javascript" src="underscore.js"></script>

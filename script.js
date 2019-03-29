@@ -89,7 +89,6 @@ var App = /** @class */ (function () {
     App.prototype.start = function () {
         return __awaiter(this, void 0, void 0, function () {
             var _a, videoWidth, videoHeight, _i, _b, canvas, i;
-            var _this = this;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -132,14 +131,14 @@ var App = /** @class */ (function () {
                         for (i = 0; i < this.outputData.length; i += 4) {
                             this.outputData[i + 3] = 255;
                         }
-                        // Setup the drawing canvas, and the frame interval
-                        this.frameInterval = setInterval(function () { return _this.frame(); }, 30);
+                        this.frame();
                         return [2 /*return*/];
                 }
             });
         });
     };
     App.prototype.frame = function () {
+        var _this = this;
         var data = this.webcam.fetch();
         var count = $("#frames").val();
         var now = new Date().getTime() / 1000.0;
@@ -171,7 +170,7 @@ var App = /** @class */ (function () {
         this.outputContext.putImageData(this.outputImage, 0, 0);
         // Update the status bar
         this.frameNumber += 1;
-        $("#status").text("Frame: " +
+        $("#status-content").text("Frame: " +
             this.frameNumber +
             "\n" +
             "Frames loaded: " +
@@ -179,6 +178,7 @@ var App = /** @class */ (function () {
             "\n" +
             "Total delay: " +
             (now - this.times[0]).toFixed(1));
+        setTimeout(function () { return _this.frame(); }, 0);
     };
     return App;
 }());
@@ -188,6 +188,9 @@ $(function () {
         .start()
         .then(function () {
         addOptions();
+        $("#fullscreen").click(function () {
+            $("#output")[0].requestFullscreen();
+        });
         $("#defaults")
             .change(function () {
             $(this)
